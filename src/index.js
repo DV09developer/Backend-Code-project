@@ -11,6 +11,7 @@ connect_db()
 .then(() => {
     app.listen(process.env.PORT, () => {
         console.log(`Server is running on port ${process.env.PORT}`);
+        console.log(`MongoDB connected successfully`);
     });
 })
 .catch((error) => {
