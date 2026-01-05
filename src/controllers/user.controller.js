@@ -1,7 +1,7 @@
-import { apiError } from "../utils/apiError";
+import { apiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import User from "../models/user.models.js";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.models.js";
+import { uploadToCloudinary } from "../utils/clodinary.js";
 import { apiResponse } from "../utils/apiResponse.js";
 
 const registerUser = asyncHandler(async (req , res , next) => {
@@ -15,7 +15,7 @@ const registerUser = asyncHandler(async (req , res , next) => {
         throw new apiError(400 , "All fields are required");
     }
 
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ email }, { name }]
     })
 

@@ -10,7 +10,7 @@ cloudinary.config({
 // how to upload file to cloudinary
 const uploadToCloudinary = async (filePath) => {
     try {
-        if (!filePath) return null;;
+        if (!filePath) return null;
         const result = await cloudinary.uploader.upload(filePath, {
             resourece_type: "auto"
         });
@@ -26,5 +26,5 @@ const uploadToCloudinary = async (filePath) => {
     }
 }
 
-export {uploadToCloudinary};
+export { uploadToCloudinary };
 // cloudinary.v2.uploader.upload("apifrom" , {})
