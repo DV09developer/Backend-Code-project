@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.models.js";
 import { uploadToCloudinary } from "../utils/clodinary.js";
 import { apiResponse } from "../utils/apiResponse.js";
+import jwt from "jsonwebtoken";
 
 const generateAccessTokenAndRefreshToken = async (userId) => {
     try {
@@ -168,4 +169,35 @@ const logoutUser = asyncHandler(async (req, res) => {
     )
 })
 
-export { registerUser , loginUser , logoutUser };
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    const refreshToken = req.cookies?.refreshToken || req.headers["refreshtoken"];
+    console.log("Refresh Token" , refreshToken);
+    if (!refreshToken) {
+        throw new apiError(401 , "Refresh token is missing");
+    }
+    let decodedtoken;
+    try {
+        decodedtoken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (error) {
+        throw new apiError(401 , "Invalid refresh token");
+    }
+    const user = await User.findById(decodedtoken._id);
+    if (!user || user.refreshToken !== refreshToken) {
+        throw new apiError(401 , "Invalid refresh token");
+    }
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await generateAccessTokenAndRefreshToken(user._id);
+
+    const options = {
+        httponly : true,
+        secure: true
+    }
+    return res
+    .status(200)
+    .cookie("accessToken", newAccessToken, options)
+    .cookie("refreshToken", newRefreshToken, options)
+    .json(
+        new apiResponse(200 , { newAccessToken, newRefreshToken } , "Access token refreshed successfully")
+    )
+});
+
+export { registerUser , loginUser , logoutUser , refreshAccessToken};
