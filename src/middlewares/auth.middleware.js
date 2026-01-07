@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.models.js";
+import { apiError } from "../utils/apiError.js";
 
 export const verifyAccessToken = asyncHandler(async (req, _, next) => {
 
@@ -10,7 +11,7 @@ export const verifyAccessToken = asyncHandler(async (req, _, next) => {
         if (!token) {
             throw new apiError(401 , "Access token is missing");
         }
-    
+
         // const decodedtoken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET , (err , payload) => {
         //     if (err) {
         //         throw new apiError(401 , "Invalid access token");
